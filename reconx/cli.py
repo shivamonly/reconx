@@ -81,11 +81,10 @@ def _show_menu() -> int:
         print(f"  v{__version__}  |  Passive analysis only")
         print("")
         print("  [1]  Enter a target URL to scan")
-        print("  [2]  Quick scan (example.com)")
-        print("  [3]  Help / About")
-        print("  [4]  Exit")
+        print("  [2]  Help / About")
+        print("  [3]  Exit")
         print("")
-        choice = input("  Select an option [1-4]: ").strip()
+        choice = input("  Select an option [1-3]: ").strip()
 
         if choice == "1":
             target = input("  Target domain or URL: ").strip()
@@ -95,10 +94,6 @@ def _show_menu() -> int:
             return _run_scan_for_target(target)
 
         elif choice == "2":
-            print("  Running scan on example.com...")
-            return _run_scan_for_target("example.com")
-
-        elif choice == "3":
             print("")
             print("  ReconX - Terminal-Based Web Reconnaissance & Security Analyzer")
             print("  Version:", __version__)
@@ -132,12 +127,12 @@ def _show_menu() -> int:
             print("    Only scan targets you own or have permission to test.")
             input("  Press Enter to continue...")
 
-        elif choice == "4":
+        elif choice == "3":
             print("  Goodbye.")
             return 0
 
         else:
-            print("  [!] Invalid option. Choose 1-4.")
+            print("  [!] Invalid option. Choose 1-3.")
 
 
 def main(argv: list[str] | None = None) -> int:

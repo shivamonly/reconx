@@ -40,7 +40,11 @@ Write-Host "[OK] Python: $python" -ForegroundColor Green
 
 # Check Python version
 $pyVer = & $python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
-if ([int]($pyVer -replace '\..*')) -lt 3 -or ([int](($pyVer -split '\.')[1] ?? 0)) -lt 10 {
+$verParts = $pyVer -split '\.'
+$major = [int]$verParts[0]
+$minor = 0
+if ($verParts.Count -ge 2) { $minor = [int]$verParts[1] }
+if ($major -lt 3 -or ($major -eq 3 -and $minor -lt 10)) {
     Write-Host "[!] Python 3.10+ required (found $pyVer)" -ForegroundColor Red
     exit 1
 }
