@@ -7,17 +7,16 @@ name = "reconx"
 version = "0.1.0"
 description = "Terminal-Based Web Reconnaissance & Security Analyzer"
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "ReconX Contributors" },
+    { name = "shivamonly" },
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Education",
-    "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3.10",
@@ -44,8 +43,10 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/<org>/reconx"
-Documentation = "https://github.com/<org>/reconx"
+Repository = "https://github.com/shivamonly/reconx"
+Documentation = "https://github.com/shivamonly/reconx"
+Homepage = "https://github.com/shivamonly/reconx"
+BugTracker = "https://github.com/shivamonly/reconx/issues"
 
 [project.scripts]
 reconx = "reconx.cli:main"

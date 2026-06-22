@@ -1,12 +1,49 @@
 import argparse
 import re
 import sys
+import time
 
 from reconx import __version__
 from reconx.core.orchestrator import run_scan
 from reconx.core.types import ScanConfig
 from reconx.output.json_formatter import format_json
 from reconx.output.terminal_formatter import format_terminal
+
+
+BOLD = "\x1b[1m"
+DIM = "\x1b[2m"
+GREEN = "\x1b[32m"
+YELLOW = "\x1b[33m"
+CYAN = "\x1b[36m"
+RED = "\x1b[31m"
+MAGENTA = "\x1b[35m"
+RESET = "\x1b[0m"
+CLS = "\x1b[2J\x1b[H"
+
+
+def _c(text: str, color: str) -> str:
+    return f"{color}{text}{RESET}"
+
+
+def _banner() -> str:
+    art = f"""
+{_c('  .--------------------------------------------------------------.', CYAN)}
+{_c('  |', CYAN)}{_c('  RRRRR   EEEEE   CCCC   OOOOO  NN  NN  XXXXX', YELLOW)}  {_c('|', CYAN)}
+{_c('  |', CYAN)}{_c('  RR  R   EE     CC     OO  OO NNN NN  XX XX', YELLOW)}  {_c('|', CYAN)}
+{_c('  |', CYAN)}{_c('  RRRR    EEEE   CC     OO  OO NN NNN   XXX ', YELLOW)}  {_c('|', CYAN)}
+{_c('  |', CYAN)}{_c('  RR RR   EE     CC     OO  OO NN  NN  XX XX', YELLOW)}  {_c('|', CYAN)}
+{_c('  |', CYAN)}{_c('  RR  RR  EEEEE   CCCC   OOOOO  NN  NN  XXXXX', YELLOW)}  {_c('|', CYAN)}
+{_c('  |', CYAN)}                                                         {_c('|', CYAN)}
+{_c('  |', CYAN)}  {_c('Web Reconnaissance & Security Analyzer', BOLD + GREEN)}              {_c('|', CYAN)}
+{_c('  |', CYAN)}  {_c(f'v{__version__} - Passive Analysis Only', DIM)}                       {_c('|', CYAN)}
+{_c('  `--------------------------------------------------------------\'', CYAN)}
+"""
+    return art
+
+
+def _clear() -> None:
+    if sys.stdout.isatty():
+        print(CLS, end="")
 
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
@@ -76,63 +113,120 @@ def _run_scan_for_target(target: str, no_color: bool = False, json_output: bool 
 
 def _show_menu() -> int:
     while True:
+        _clear()
+        print(_banner())
+        print(f"  {_c('.--------------------------------------------------------------.', CYAN)}")
+        print(f"  {_c('|', CYAN)}              {_c('*  R E C O N X  *', BOLD + YELLOW)}                {_c('|', CYAN)}")
+        print(f"  {_c('|--------------------------------------------------------------|', CYAN)}")
+        print(f"  {_c('|', CYAN)}  {_c('[1]', GREEN)}  {_c('Scan a Target URL', BOLD)}{' ' * 41}{_c('|', CYAN)}")
+        print(f"  {_c('|', CYAN)}  {_c('[2]', GREEN)}  {_c('Help / Documentation', BOLD)}     {' ' * 33}{_c('|', CYAN)}")
+        print(f"  {_c('|', CYAN)}  {_c('[3]', GREEN)}  {_c('Developer Info', BOLD)}           {' ' * 35}{_c('|', CYAN)}")
+        print(f"  {_c('|', CYAN)}  {_c('[4]', RED)}   {_c('Exit', BOLD)}                    {' ' * 41}{_c('|', CYAN)}")
+        print(f"  {_c('`--------------------------------------------------------------\'', CYAN)}")
         print("")
-        print("  ReconX - Web Reconnaissance & Security Analyzer")
-        print(f"  v{__version__}  |  Passive analysis only")
-        print("")
-        print("  [1]  Enter a target URL to scan")
-        print("  [2]  Help / About")
-        print("  [3]  Exit")
-        print("")
-        choice = input("  Select an option [1-3]: ").strip()
+        choice = input(f"  {_c('=>', GREEN)} Select option {_c('[1-4]', DIM)}: ").strip()
 
         if choice == "1":
-            target = input("  Target domain or URL: ").strip()
+            _clear()
+            print(f"\n  {_c('--- Scan Target ---', BOLD + CYAN)}\n")
+            target = input(f"  {_c('=>', GREEN)} Enter domain or URL: ").strip()
             if not target:
-                print("  [!] No target entered.")
+                print(f"\n  {_c('X', RED)} No target entered.")
+                input(f"  {_c('Press Enter to continue...', DIM)}")
                 continue
-            return _run_scan_for_target(target)
+            print("")
+            _run_scan_for_target(target)
+            input(f"\n  {_c('Press Enter to return to menu...', DIM)}")
+            continue
 
         elif choice == "2":
-            print("")
-            print("  ReconX - Terminal-Based Web Reconnaissance & Security Analyzer")
-            print("  Version:", __version__)
-            print("  License: MIT")
-            print("")
-            print("  What it does:")
-            print("    - URL resolution and redirect analysis")
-            print("    - DNS and SSRF guard checks")
-            print("    - TLS/SSL certificate inspection")
-            print("    - Security header analysis (CSP, HSTS, etc.)")
-            print("    - Technology stack detection")
-            print("    - Security scoring with weighted findings")
-            print("")
-            print("  Quick usage:")
-            print("    reconx scan example.com")
-            print("    reconx scan example.com --json")
-            print("    reconx scan https://example.com --ssl --headers")
-            print("    reconx --version")
-            print("")
-            print("  Flags:")
-            print("    --headers              Header analysis only")
-            print("    --ssl                  SSL/TLS analysis only")
-            print("    --tech                 Tech detection only")
-            print("    --json                 JSON output")
-            print("    --timeout <sec>        Request timeout (default: 5)")
-            print("    --no-color             Disable ANSI colors")
-            print("    --verbose, -v          Show request/response metadata")
-            print("    --allow-private-targets  Allow scanning private IPs")
-            print("")
-            print("  Responsible use:")
-            print("    Only scan targets you own or have permission to test.")
-            input("  Press Enter to continue...")
+            _show_help()
 
         elif choice == "3":
-            print("  Goodbye.")
+            _show_dev_info()
+
+        elif choice == "4":
+            _clear()
+            print(f"\n  {_c('* Thanks for using ReconX! *', GREEN)}")
+            print(f"  {_c('Stay secure. Stay curious.', DIM)}\n")
             return 0
 
         else:
-            print("  [!] Invalid option. Choose 1-3.")
+            print(f"\n  {_c('X Invalid option. Choose 1-4.', RED)}")
+            time.sleep(1)
+
+
+def _show_help() -> None:
+    _clear()
+    print(f"""
+  {_c('.----------------------------------------------.', CYAN)}
+  {_c('|', CYAN)}        {_c('*  HELP & DOCUMENTATION  *', BOLD + YELLOW)}        {_c('|', CYAN)}
+  {_c('`----------------------------------------------\'', CYAN)}
+
+    {_c('--- About', BOLD)}
+  ReconX is a lightweight, terminal-based tool that assesses the
+  externally observable security posture of a website using only
+  passive analysis techniques.
+
+    {_c('--- What It Does', BOLD)}
+    {_c('v', GREEN)}  HTTP reachability, latency & redirect-chain analysis
+    {_c('v', GREEN)}  Technology fingerprinting (framework, CMS, server)
+    {_c('v', GREEN)}  Security header analysis (CSP, HSTS, XFO, cookies)
+    {_c('v', GREEN)}  TLS/SSL certificate inspection
+    {_c('v', GREEN)}  Composite security score with transparent weightings
+
+  {_c('--- Quick Usage', BOLD)}
+    {_c('$', GREEN)} reconx scan example.com          Full scan (all checks)
+    {_c('$', GREEN)} reconx scan example.com --ssl    SSL/TLS only
+    {_c('$', GREEN)} reconx scan example.com --tech   Tech detection only
+    {_c('$', GREEN)} reconx scan example.com --json   Machine-readable output
+    {_c('$', GREEN)} reconx --version                 Print version
+
+  {_c('--- Flags', BOLD)}
+    --headers                 Header analysis only
+    --ssl                     SSL/TLS analysis only
+    --tech                    Tech detection only
+    --json                    JSON output
+    --timeout <sec>           Request timeout (default: 5s)
+    --no-color                Disable ANSI colors
+    --verbose, -v             Show request/response metadata
+    --allow-private-targets   Allow scanning private IPs
+
+  {_c('--- Security Score', BOLD)}
+    Score starts at 100 and deducts for missing controls:
+    {_c('*', YELLOW)}  HTTPS not enforced           {_c('-30', RED)}
+    {_c('*', YELLOW)}  Certificate expired          {_c('-40', RED)}
+    {_c('*', YELLOW)}  HSTS missing                 {_c('-15', RED)}
+    {_c('*', YELLOW)}  CSP missing                  {_c('-15', RED)}
+    {_c('*', YELLOW)}  X-Frame-Options missing      {_c('-10', RED)}
+    Buckets: {_c('Secure', GREEN)} (80-100) | {_c('Moderate', YELLOW)} (50-79) | {_c('Risky', RED)} (0-49)
+
+  {_c('--- Responsible Use', BOLD)}
+    Only scan targets you own or have permission to test.
+    ReconX performs {_c('passive analysis only', BOLD)}.
+""")
+    input(f"  {_c('Press Enter to return to menu...', DIM)}")
+
+
+def _show_dev_info() -> None:
+    _clear()
+    print(f"""
+  {_c('.----------------------------------------------.', CYAN)}
+  {_c('|', CYAN)}         {_c('*  DEVELOPER INFORMATION  *', BOLD + YELLOW)}        {_c('|', CYAN)}
+  {_c('`----------------------------------------------\'', CYAN)}
+
+    {_c('--- Developer', BOLD)}
+    {_c('*', CYAN)}  Name:        Shivam Verma
+    {_c('*', CYAN)}  Email:       workshivam@yahoo.com
+    {_c('*', CYAN)}  GitHub:      https://github.com/Shivamonly
+    {_c('*', CYAN)}  LinkedIn:    https://linkedin.com/in/shlvxm
+    {_c('*', CYAN)}  Bio:         Cybersecurity enthusiast and BCA student
+                   focused on building practical security tools and
+                   web-based applications. Passionate about threat
+                   analysis, secure development, and learning real-
+                   world defensive techniques.
+""")
+    input(f"  {_c('Press Enter to return to menu...', DIM)}")
 
 
 def main(argv: list[str] | None = None) -> int:

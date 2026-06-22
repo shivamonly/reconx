@@ -14,8 +14,19 @@ ReconX is a lightweight, terminal-based tool that lets you assess the **external
 
 ## Installation
 
+### Install from PyPI (recommended)
 ```bash
-git clone https://github.com/<org>/reconx
+pip install reconx
+```
+
+### Install directly from GitHub
+```bash
+pip install git+https://github.com/shivamonly/reconx.git
+```
+
+### Install for development
+```bash
+git clone https://github.com/shivamonly/reconx
 cd reconx
 pip install -e .
 ```
