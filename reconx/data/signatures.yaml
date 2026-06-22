@@ -1,0 +1,52 @@
+- name: WordPress
+  category: cms
+  header_patterns:
+    - header: "Link"
+      regex: "wp-json"
+  html_patterns:
+    - regex: "wp-content/"
+  confidence: high
+
+- name: React
+  category: frontend_framework
+  html_patterns:
+    - regex: "data-reactroot"
+    - regex: "__REACT_DEVTOOLS_GLOBAL_HOOK__"
+  confidence: medium
+
+- name: Angular
+  category: frontend_framework
+  html_patterns:
+    - regex: "ng-version"
+    - regex: "ng-app"
+  confidence: medium
+
+- name: Vue
+  category: frontend_framework
+  html_patterns:
+    - regex: "data-v-[a-f0-9]+"
+    - regex: "__VUE_DEVTOOLS_GLOBAL_HOOK__"
+  confidence: medium
+
+- name: Nginx
+  category: server
+  header_patterns:
+    - header: "Server"
+      regex: "nginx"
+  confidence: high
+
+- name: Apache
+  category: server
+  header_patterns:
+    - header: "Server"
+      regex: "Apache"
+  confidence: high
+
+- name: PHP
+  category: backend
+  header_patterns:
+    - header: "X-Powered-By"
+      regex: "PHP"
+  html_patterns:
+    - regex: "\\/wp-admin\\/"
+  confidence: medium

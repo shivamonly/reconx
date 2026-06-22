@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reconx"
+version = "0.1.0"
+description = "Terminal-Based Web Reconnaissance & Security Analyzer"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "ReconX Contributors" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: System :: Networking",
+]
+
+dependencies = [
+    "requests>=2.28",
+    "tldextract>=5",
+    "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7",
+    "mypy>=1",
+    "ruff>=0.1",
+    "bandit>=1.7",
+    "pip-audit>=2",
+    "trustme>=1",
+]
+
+[project.urls]
+Repository = "https://github.com/<org>/reconx"
+Documentation = "https://github.com/<org>/reconx"
+
+[project.scripts]
+reconx = "reconx.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["reconx*"]
+
+[tool.mypy]
+strict = true
+python_version = "3.10"
+disallow_untyped_defs = true
+disallow_any_unimported = false
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.bandit]
+exclude_dirs = ["tests"]
